@@ -10,17 +10,17 @@ import GameplayKit
 
 public class Tile: SKSpriteNode
 {
-    let spriteSize: CGSize = CGSize(width: 32, height: 32)
+    let spriteSize: CGSize = CGSize(width: 64, height: 64)
     var isRevealed: Bool = false
     var isFlagged: Bool = false
     var numberOfAdjacentBombs: Int = 0
     var lossAction: (() -> Void)?
     var clearedAction: (() -> Void)?
-    var bombTexture = SKTexture(imageNamed: "bomb")
-    var tileTexture = SKTexture(imageNamed: "tile")
-    var flagTexture = SKTexture(imageNamed: "flag")
-    var emptyTexture = SKTexture(imageNamed: "emptyTexture")
-    var label = SKLabelNode()
+    let bombTexture = SKTexture(imageNamed: "bomb")
+    let tileTexture = SKTexture(imageNamed: "tile")
+    let flagTexture = SKTexture(imageNamed: "flag")
+    let emptyTexture = SKTexture(imageNamed: "emptyTexture")
+    let label = SKLabelNode()
     var adjacentTiles: [Tile] = []
     init(lossAction: @escaping () -> Void, clearedAction: @escaping () -> Void)
     {
@@ -83,10 +83,39 @@ class GameScene: SKScene
 {
     let boardWidth: UInt32 = 10
     let boardHeight: UInt32 = 10
+    let totalBombs : UInt32 = 10
+    var remainingEmptyTiles: UInt32 = 0
     var board: [[Tile]] = []
+    
+    func CreateBoard()
+    {
+        for row in 0..<Int(boardHeight)
+        {
+            var rowArray: [Tile] = []
+            for col in 0..<Int(boardWidth)
+            {
+                let newTile = Tile(lossAction: GameOver, clearedAction: OnTileCleared)
+                rowArray.append(newTile)
+            }
+            board.append(rowArray)
+        }
+    }
+    func SetupNeighbors()
+    {
+        
+    }
+    func OnTileCleared()
+    {
+        remainingEmptyTiles -= 1
+    }
+    func GameOver()
+    {
+        
+    }
     override func didMove(to view: SKView)
     {
-
+        CreateBoard()
+        SetupNeighbors()
     }
     
     
