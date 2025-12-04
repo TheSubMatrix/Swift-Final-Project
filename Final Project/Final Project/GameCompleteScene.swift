@@ -11,20 +11,32 @@ import GameplayKit
 
 class GameCompleteScene : SKScene
 {
-    var button : SKNode?
+    var replayButton : SKNode?
+    var mainMenuButton : SKNode?
     override func didMove(to view: SKView)
     {
-        button = childNode(withName: "Play Again Button")
+        replayButton = childNode(withName: "Play Again Button")
+        mainMenuButton = childNode(withName: "Main Menu Button")
     }
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else {return}
-        guard let button = button else {return}
         let location = touch.location(in: self)
-        if button.frame.contains(location)
+        if replayButton!.frame.contains(location)
         {
-            if let newScene = SKScene(fileNamed: "GameScene") as? GameScene {
+            if let newScene = SKScene(fileNamed: "GameScene") as? GameScene
+            {
+                let transition = SKTransition.flipVertical(withDuration: 0.5)
                 newScene.scaleMode = .aspectFill
-                scene?.view?.presentScene(newScene)
+                scene?.view?.presentScene(newScene, transition: transition)
+            }
+        }
+        if mainMenuButton!.frame.contains(location)
+        {
+            if let newScene = SKScene(fileNamed: "MainMenu") as? MainMenu
+            {
+                let transition = SKTransition.flipVertical(withDuration: 0.5)
+                newScene.scaleMode = .aspectFill
+                scene?.view?.presentScene(newScene, transition: transition)
             }
         }
     }

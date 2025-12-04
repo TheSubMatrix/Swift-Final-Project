@@ -22,6 +22,7 @@ public class Tile: SKSpriteNode
     let emptyTexture = SKTexture(imageNamed: "TileEmpty")
     let label = SKLabelNode()
     var adjacentTiles: [Tile] = []
+    
     init(lossAction: @escaping () -> Void, clearedAction: @escaping () -> Void)
     {
         self.lossAction = lossAction
@@ -69,7 +70,7 @@ public class Tile: SKSpriteNode
             return
         }
         
-        isRevealed = true  // Move this to happen first!
+        isRevealed = true
         self.texture = emptyTexture
         if numberOfAdjacentBombs > 0
         {
@@ -98,8 +99,21 @@ class GameScene: SKScene
     let totalBombs : UInt = 10
     let tileSize: CGFloat = 64
     let scoreLabel = SKLabelNode()
-    
+    var deathSound = SKAction.playSoundFileNamed( "Metal pipe falling sound effect but its more violent", waitForCompletion: false)
     var remainingEmptyTiles: UInt = 0
+    {
+        didSet {
+            scoreLabel.text = "Remaining: \(remainingEmptyTiles)"
+            if remainingEmptyTiles > 0 {return}
+            guard let view = self.view else {return}
+            if let winScene = GameCompleteScene(fileNamed: "WinScene")
+            {
+                let transition = SKTransition.flipVertical(withDuration: 0.5)
+                winScene.scaleMode = .aspectFill
+                view.presentScene(winScene, transition: transition)
+            }
+        }
+    }
     var board: [[Tile]] = []
     
     let minimumPressDuration: TimeInterval = 0.5
@@ -199,21 +213,16 @@ class GameScene: SKScene
     func OnTileCleared()
     {
         remainingEmptyTiles -= 1
-        scoreLabel.text = "Remaining: \(remainingEmptyTiles)"
-        if remainingEmptyTiles > 0 {return}
-        
-        guard let view = self.view else {return}
-        if let winScene = GameCompleteScene(fileNamed: "WinScene") {
-            winScene.scaleMode = .aspectFill
-            view.presentScene(winScene)
-        }
     }
     func GameOver()
     {
+        run(deathSound)
         guard let view = self.view else {return}
-        if let winScene = GameCompleteScene(fileNamed: "LoseScene") {
+        if let winScene = GameCompleteScene(fileNamed: "LoseScene")
+        {
+            let transition = SKTransition.flipVertical(withDuration: 0.5)
             winScene.scaleMode = .aspectFill
-            view.presentScene(winScene)
+            view.presentScene(winScene, transition: transition)
         }
     }
     override func didMove(to view: SKView)
